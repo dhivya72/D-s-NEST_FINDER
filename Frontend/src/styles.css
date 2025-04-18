@@ -1,0 +1,31 @@
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Loading Spinner */
+.loading-spinner img {
+  width: 50px;
+  height: 50px;
+}
+
+/* Slideshow */
+.slideshow-container {
+  width: 100%;
+  height: 400px;
+  position: relative;
+}
+
+.slideshow-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+.slideshow-container img.active {
+  display: block;
+}
