@@ -42,13 +42,23 @@ function Homes() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center p-10"
+      className="min-h-screen bg-cover bg-center p-6"
       style={{ backgroundImage: "url(http://localhost:5000/light.jpg)" }}
     >
-      <h1 className="text-4xl text-center mb-8 text-white text-shadow-lg">
+      <h1 className="text-4xl text-center mb-6 text-white text-shadow-lg">
         Available Homes
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-7xl mx-auto">
+      <div
+        className="grid gap-6" // Increased gap from 4 to 6
+        style={{
+          maxWidth: "1260px", // Increased to fit two 600px cards + gap (2 * 600px + 60px = 1260px)
+          margin: "0 auto",
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 600px)", // Match card width
+          justifyContent: "center",
+          alignItems: "start", // Align cards to the top
+        }}
+      >
         {homes.map((home) => (
           <HouseCard key={home.id} home={home} openChat={openChat} />
         ))}

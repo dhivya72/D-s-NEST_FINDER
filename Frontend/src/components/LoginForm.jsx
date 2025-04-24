@@ -1,67 +1,91 @@
-import { useState } from "react";
-import axios from "axios";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import axios from "axios";
 
 function LoginForm() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false); // Add admin toggle
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await axios.post("http://localhost:5000/login", formData);
-      if (res.data.userId) {
-        localStorage.setItem("userId", res.data.userId);
-        localStorage.setItem("full_name", res.data.full_name);
-        alert("Login successful!");
-        navigate("/homes");
+      const endpoint = isAdmin ? "/admin-login" : "/login";
+      const response = await axios.post(`http://localhost:5000${endpoint}`, {
+        email,
+        password,
+      });
+
+      const { userId, full_name, role } = response.data;
+      console.log("Login successful:", { userId, full_name, role });
+
+      // Update AuthContext (which handles localStorage)
+      login(userId, full_name, role);
+
+      // Debug: Verify localStorage
+      console.log("localStorage after login:", {
+        userId: localStorage.getItem("userId"),
+        full_name: localStorage.getItem("full_name"),
+        role: localStorage.getItem("role"),
+      });
+
+      // Navigate based on role
+      if (role === "admin") {
+        navigate("/admin-dashboard");
       } else {
-        alert(res.data.message || "Login failed");
+        navigate("/homes");
       }
     } catch (error) {
-      alert(error.response?.data?.message || "Login failed");
+      console.error("Login failed:", error);
+      console.log("Response:", error.response);
+      console.log("Request:", error.request);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "An error occurred during login";
+      alert(errorMessage);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="email" className="block mb-1">
-          Email:
-        </label>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded shadow-md w-80"
+      >
+        <h2 className="text-2xl mb-4 text-center font-semibold">Login</h2>
         <input
           type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          placeholder="Enter your email"
-          className="w-full p-2 mb-4 border rounded-lg"
+          placeholder="Email"
+          className="w-full mb-4 p-2 border rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <label htmlFor="password" className="block mb-1">
-          Password:
-        </label>
         <input
           type="password"
-          name="password"
-          value={formData.password}
-          onChange={handleInputChange}
-          placeholder="Enter your password"
-          className="w-full p-2 mb-4 border rounded-lg"
+          placeholder="Password"
+          className="w-full mb-4 p-2 border rounded"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
+        <label className="flex items-center mb-4">
+          <input
+            type="checkbox"
+            checked={isAdmin}
+            onChange={(e) => setIsAdmin(e.target.checked)}
+            className="mr-2"
+          />
+          Admin Login
+        </label>
         <button
           type="submit"
-          className="w-full p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-700"
+          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
         >
           Login
         </button>
