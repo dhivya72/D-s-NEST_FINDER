@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import HouseCard from "../components/HouseCard";
 import ChatBox from "../components/ChatBox";
+import SearchBar from "../components/SearchBar";
 
 function Homes() {
   const [homes, setHomes] = useState([]);
@@ -48,20 +49,27 @@ function Homes() {
       <h1 className="text-4xl text-center mb-6 text-white text-shadow-lg">
         Available Homes
       </h1>
+      <SearchBar setHomes={setHomes} />
       <div
-        className="grid gap-6" // Increased gap from 4 to 6
+        className="grid gap-6"
         style={{
-          maxWidth: "1260px", // Increased to fit two 600px cards + gap (2 * 600px + 60px = 1260px)
+          maxWidth: "1260px",
           margin: "0 auto",
           display: "grid",
-          gridTemplateColumns: "repeat(2, 600px)", // Match card width
+          gridTemplateColumns: "repeat(2, 600px)",
           justifyContent: "center",
-          alignItems: "start", // Align cards to the top
+          alignItems: "start",
         }}
       >
-        {homes.map((home) => (
-          <HouseCard key={home.id} home={home} openChat={openChat} />
-        ))}
+        {homes.length > 0 ? (
+          homes.map((home) => (
+            <HouseCard key={home.id} home={home} openChat={openChat} />
+          ))
+        ) : (
+          <p className="text-center text-white text-shadow-lg">
+            No homes found.
+          </p>
+        )}
       </div>
       <ChatBox
         homeId={chatHomeId}

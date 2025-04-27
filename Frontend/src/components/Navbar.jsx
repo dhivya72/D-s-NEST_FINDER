@@ -53,6 +53,14 @@ function Navbar() {
             >
               Dashboard
             </Link>
+            {role === "admin" && (
+              <Link
+                to="/admin-visualizations"
+                className="text-white mx-4 text-lg uppercase hover:text-blue-400"
+              >
+                Visualizations
+              </Link>
+            )}
             <button
               onClick={handleLogout}
               className="text-white mx-4 text-lg uppercase hover:text-blue-400"

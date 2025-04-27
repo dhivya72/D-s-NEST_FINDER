@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import socket from "../socket";
 
@@ -6,8 +6,21 @@ function ChatBox({ homeId, ownerName, isOpen, onClose }) {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const messagesRef = useRef(null);
-  const userId = localStorage.getItem("userId");
+  const userId = localStorage.getItem("userId"); // Keep for potential use
   const fullName = localStorage.getItem("full_name") || "Guest";
+
+  // Memoize fetchMessages to prevent unnecessary re-renders
+  const fetchMessages = useCallback(async () => {
+    if (!homeId) return;
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/chat/messages/${homeId}`
+      );
+      setMessages(res.data);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+  }, [homeId]); // Dependencies for fetchMessages
 
   useEffect(() => {
     if (homeId && isOpen) {
@@ -27,7 +40,7 @@ function ChatBox({ homeId, ownerName, isOpen, onClose }) {
     return () => {
       socket.off("new_message");
     };
-  }, [homeId, isOpen]);
+  }, [homeId, isOpen, fetchMessages]); // Added fetchMessages to dependencies
 
   useEffect(() => {
     if (messagesRef.current) {
@@ -35,25 +48,16 @@ function ChatBox({ homeId, ownerName, isOpen, onClose }) {
     }
   }, [messages]);
 
-  const fetchMessages = async () => {
-    try {
-      const res = await axios.get(
-        `http://localhost:5000/chat/messages/${homeId}`
-      );
-      setMessages(res.data);
-    } catch (error) {
-      console.error("Error fetching messages:", error);
-    }
-  };
-
   const sendMessage = () => {
     if (!message.trim() || !ownerName || !homeId) return;
 
+    // Include userId in the message payload (assuming backend expects it)
     socket.emit("send_message", {
       homeId,
       sender: fullName,
       receiver: ownerName,
       message,
+      userId, // Added for backend validation or tracking
     });
 
     setMessages((prev) => [...prev, { sender: fullName, message }]);

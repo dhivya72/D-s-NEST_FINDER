@@ -1,0 +1,33 @@
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.calendar-day.booked {
+  background-color: #ff0000;
+  color: #ffffff;
+  cursor: not-allowed;
+}
+
+.calendar-day.available {
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.calendar-day.selected {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+.calendar-day.past {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

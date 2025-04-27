@@ -20,6 +20,8 @@ import RequireAuth from "./components/RequireAuth";
 import BookingConfirmation from "./components/BookingConfirmation";
 import RequireAdmin from "./components/RequireAdmin";
 import AdminDashboard from "./components/AdminDashboard";
+import AdminVisualizations from "./components/AdminVisualizations"; // Import the new component
+import UserDetails from "./pages/UserDetails";
 
 const DashboardWrapper = () => {
   const { userId: urlUserId } = useParams();
@@ -66,6 +68,22 @@ function App() {
                 <RequireAdmin>
                   <AdminDashboard />
                 </RequireAdmin>
+              }
+            />
+            <Route
+              path="/admin-visualizations"
+              element={
+                <RequireAdmin>
+                  <AdminVisualizations />
+                </RequireAdmin>
+              }
+            />
+            <Route
+              path="/user-details"
+              element={
+                <RequireAuth>
+                  <UserDetails />
+                </RequireAuth>
               }
             />
             <Route

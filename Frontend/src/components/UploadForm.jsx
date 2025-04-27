@@ -9,6 +9,8 @@ function UploadForm() {
     price: "",
     latitude: "",
     longitude: "",
+    max_persons: "",
+    house_type: "",
     is_booked: "0",
   });
   const [images, setImages] = useState([]);
@@ -48,6 +50,8 @@ function UploadForm() {
         price: "",
         latitude: "",
         longitude: "",
+        max_persons: "",
+        house_type: "",
         is_booked: "0",
       });
       setImages([]);
@@ -97,6 +101,30 @@ function UploadForm() {
           className="w-full p-2 mb-4 border rounded-lg"
           required
         />
+        <input
+          type="number"
+          name="max_persons"
+          value={formData.max_persons}
+          onChange={handleInputChange}
+          placeholder="Maximum Persons"
+          className="w-full p-2 mb-4 border rounded-lg"
+          required
+        />
+        <select
+          name="house_type"
+          value={formData.house_type}
+          onChange={handleInputChange}
+          className="w-full p-2 mb-4 border rounded-lg"
+          required
+        >
+          <option value="" disabled>
+            Select House Type
+          </option>
+          <option value="1BHK">1BHK</option>
+          <option value="2BHK">2BHK</option>
+          <option value="3BHK">3BHK</option>
+          <option value="Villa">Villa</option>
+        </select>
         <input
           type="text"
           name="latitude"

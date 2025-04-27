@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 function AdminDashboard() {
   const { userId } = useContext(AuthContext);
@@ -15,7 +16,7 @@ function AdminDashboard() {
     } catch (error) {
       console.error("Error fetching houses:", error);
     }
-  }, []); // No dependencies since it doesn't use any props/state
+  }, []);
 
   const fetchBookings = useCallback(async () => {
     try {
@@ -27,12 +28,12 @@ function AdminDashboard() {
       console.error("Error fetching bookings:", error);
       alert("Failed to fetch bookings: " + error.response?.data?.message);
     }
-  }, [userId]); // userId is a dependency because it's used in the headers
+  }, [userId]);
 
   useEffect(() => {
     fetchHouses();
     fetchBookings();
-  }, [fetchHouses, fetchBookings]); // Dependencies are now stable
+  }, [fetchHouses, fetchBookings]);
 
   const handleDelete = async (houseId) => {
     if (window.confirm("Are you sure you want to delete this house?")) {
@@ -52,91 +53,167 @@ function AdminDashboard() {
   };
 
   return (
-    <div style={{ padding: "2rem", textAlign: "center" }}>
-      <h2>Admin Dashboard</h2>
-      <p>Welcome, Admin! Manage houses and bookings here.</p>
+    <div
+      style={{
+        padding: "2rem",
+        backgroundColor: "#F5F6FA",
+        minHeight: "100vh",
+      }}
+    >
+      <h1
+        style={{ color: "#2E86AB", textAlign: "center", marginBottom: "2rem" }}
+      >
+        Admin Dashboard
+      </h1>
+      <p style={{ textAlign: "center", color: "#555", marginBottom: "2rem" }}>
+        Manage houses and bookings here.
+      </p>
+
+      <Link
+        to="/admin-visualizations"
+        style={{
+          display: "inline-block",
+          padding: "0.5rem 1rem",
+          backgroundColor: "#4ECDC4",
+          color: "#FFFFFF",
+          textDecoration: "none",
+          borderRadius: "4px",
+          marginBottom: "2rem",
+          transition: "background-color 0.3s",
+        }}
+        onMouseOver={(e) => (e.target.style.backgroundColor = "#45B7D1")}
+        onMouseOut={(e) => (e.target.style.backgroundColor = "#4ECDC4")}
+      >
+        View Visualizations
+      </Link>
 
       {/* Houses Section */}
       <div style={{ marginBottom: "2rem" }}>
-        <h3>Houses</h3>
+        <h2 style={{ color: "#2E86AB", marginBottom: "1rem" }}>Houses</h2>
         {houses.length === 0 ? (
-          <p>No houses available.</p>
+          <p style={{ color: "#777" }}>No houses available.</p>
         ) : (
-          <ul style={{ listStyle: "none", padding: 0 }}>
+          <div
+            style={{
+              display: "grid",
+              gap: "1rem",
+              maxWidth: "800px",
+              margin: "0 auto",
+            }}
+          >
             {houses.map((house) => (
-              <li
+              <div
                 key={house.id}
-                style={{ margin: "1rem 0", textAlign: "left" }}
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  padding: "1rem",
+                  borderRadius: "8px",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
               >
-                {house.address} - ₹{house.price}
+                <div>
+                  {house.address} - ₹{house.price} ({house.house_type},{" "}
+                  {house.max_persons} persons, Rating:{" "}
+                  {house.rating != null
+                    ? Number(house.rating).toFixed(1)
+                    : "N/A"}
+                  )
+                </div>
                 <button
                   onClick={() => handleDelete(house.id)}
                   style={{
-                    marginLeft: "1rem",
-                    backgroundColor: "red",
-                    color: "white",
+                    backgroundColor: "#FF6B6B",
+                    color: "#FFFFFF",
                     border: "none",
-                    padding: "0.5rem",
+                    padding: "0.5rem 1rem",
                     borderRadius: "4px",
                     cursor: "pointer",
+                    transition: "background-color 0.3s",
                   }}
+                  onMouseOver={(e) =>
+                    (e.target.style.backgroundColor = "#FF8787")
+                  }
+                  onMouseOut={(e) =>
+                    (e.target.style.backgroundColor = "#FF6B6B")
+                  }
                 >
                   Delete
                 </button>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
 
       {/* Bookings Section */}
       <div>
-        <h3>Bookings</h3>
+        <h2 style={{ color: "#2E86AB", marginBottom: "1rem" }}>Bookings</h2>
         {bookings.length === 0 ? (
-          <p>No bookings available.</p>
+          <p style={{ color: "#777" }}>No bookings available.</p>
         ) : (
           <table
             style={{
-              margin: "0 auto",
               borderCollapse: "collapse",
               width: "80%",
+              maxWidth: "1000px",
+              margin: "0 auto",
+              backgroundColor: "#FFFFFF",
+              borderRadius: "8px",
+              overflow: "hidden",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
             }}
           >
             <thead>
-              <tr style={{ backgroundColor: "#f0f0f0" }}>
-                <th style={{ border: "1px solid #ddd", padding: "0.5rem" }}>
+              <tr style={{ backgroundColor: "#2E86AB", color: "#FFFFFF" }}>
+                <th
+                  style={{ padding: "0.75rem", borderBottom: "2px solid #ddd" }}
+                >
                   Booking ID
                 </th>
-                <th style={{ border: "1px solid #ddd", padding: "0.5rem" }}>
+                <th
+                  style={{ padding: "0.75rem", borderBottom: "2px solid #ddd" }}
+                >
                   User
                 </th>
-                <th style={{ border: "1px solid #ddd", padding: "0.5rem" }}>
+                <th
+                  style={{ padding: "0.75rem", borderBottom: "2px solid #ddd" }}
+                >
                   House
                 </th>
-                <th style={{ border: "1px solid #ddd", padding: "0.5rem" }}>
+                <th
+                  style={{ padding: "0.75rem", borderBottom: "2px solid #ddd" }}
+                >
                   Price
                 </th>
-                <th style={{ border: "1px solid #ddd", padding: "0.5rem" }}>
+                <th
+                  style={{ padding: "0.75rem", borderBottom: "2px solid #ddd" }}
+                >
                   Payment Status
                 </th>
               </tr>
             </thead>
             <tbody>
               {bookings.map((booking) => (
-                <tr key={booking.booking_id}>
-                  <td style={{ border: "1px solid #ddd", padding: "0.5rem" }}>
+                <tr
+                  key={booking.booking_id}
+                  style={{ borderBottom: "1px solid #ddd" }}
+                >
+                  <td style={{ padding: "0.75rem", textAlign: "center" }}>
                     {booking.booking_id}
                   </td>
-                  <td style={{ border: "1px solid #ddd", padding: "0.5rem" }}>
+                  <td style={{ padding: "0.75rem", textAlign: "center" }}>
                     {booking.user_name}
                   </td>
-                  <td style={{ border: "1px solid #ddd", padding: "0.5rem" }}>
+                  <td style={{ padding: "0.75rem", textAlign: "center" }}>
                     {booking.house_address}
                   </td>
-                  <td style={{ border: "1px solid #ddd", padding: "0.5rem" }}>
+                  <td style={{ padding: "0.75rem", textAlign: "center" }}>
                     ₹{booking.house_price}
                   </td>
-                  <td style={{ border: "1px solid #ddd", padding: "0.5rem" }}>
+                  <td style={{ padding: "0.75rem", textAlign: "center" }}>
                     {booking.payment_status}
                   </td>
                 </tr>
